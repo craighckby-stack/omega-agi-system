@@ -214,7 +214,7 @@ export default function LLM2FullStackDashboard() {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-gray-400">Experiences:</span>
-                  <span className="text-2xl font-bold">{layerStatus.memory.experiences.toLocaleString()}</span>
+                  <span className="text-2xl font-bold">{layerStatus.memory.totalExperiences.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Success Rate:</span>
