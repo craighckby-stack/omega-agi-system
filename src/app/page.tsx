@@ -38,20 +38,28 @@ export default function LLM2FullStackDashboard() {
     monitoringInterval: 120000, // 120 seconds
   });
 
-  const [evolutionStatus, setEvolutionStatus] = useState({
-    currentCycle: 1,
-    status: 'idle',
-    progress: 0,
-    strategies: [],
-    applied: 0,
-    improvement: 0.0,
-  });
+  const [activityLog, setActivityLog] = useState<Array<{ time: string; message: string; color: string }>>([]);
 
   useEffect(() => {
+    // Initialize system status
     loadSystemStatus();
     const interval = setInterval(loadSystemStatus, 2000); // Update every 2 seconds
     return () => clearInterval(interval);
   }, []);
+
+  // Initialize activity log on client to avoid hydration errors
+  useEffect(() => {
+    const now = new Date().toLocaleTimeString();
+    const initialLogs = [
+      { time: now, message: 'OMEGA: System boot complete', color: 'green' },
+      { time: now, message: 'OMEGA: All 6 layers initialized', color: 'blue' },
+      { time: now, message: 'OMEGA: Evolution Cycle #1 started', color: 'purple' },
+      { time: now, message: 'OMEGA: Dual-LLM coordination established', color: 'yellow' },
+    ];
+    setActivityLog(initialLogs);
+  }, []);
+
+  const [evolutionStatus, setEvolutionStatus] = useState({
 
   async function loadSystemStatus() {
     try {
@@ -460,22 +468,14 @@ export default function LLM2FullStackDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2 font-mono text-sm">
-              <div className="flex gap-2">
-                <span className="text-gray-500">[{new Date().toLocaleTimeString()}]</span>
-                <span className="text-green-400">OMEGA: System boot complete</span>
-              </div>
-              <div className="flex gap-2">
-                <span className="text-gray-500">[{new Date().toLocaleTimeString()}]</span>
-                <span className="text-blue-400">OMEGA: All 6 layers initialized</span>
-              </div>
-              <div className="flex gap-2">
-                <span className="text-gray-500">[{new Date().toLocaleTimeString()}]</span>
-                <span className="text-purple-400">OMEGA: Evolution Cycle #1 started</span>
-              </div>
-              <div className="flex gap-2">
-                <span className="text-gray-500">[{new Date().toLocaleTimeString()}]</span>
-                <span className="text-yellow-400">OMEGA: Dual-LLM coordination established</span>
-              </div>
+              {activityLog.map((log, index) => (
+                <div key={index} className="flex gap-2">
+                  <span className="text-gray-500">[{log.time}]</span>
+                  <span className={log.color === 'green' ? 'text-green-400' : log.color === 'blue' ? 'text-blue-400' : log.color === 'purple' ? 'text-purple-400' : 'text-yellow-400'}>
+                    {log.message}
+                  </span>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
