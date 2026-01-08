@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Activity, Zap, Users, Database, Shield, Brain, Cpu, Clock, TrendingUp } from 'lucide-react';
 import { OMEGAChat } from '@/components/ui/omega-chat';
@@ -24,7 +23,7 @@ export default function LLM2FullStackDashboard() {
     reasoning: { active: false, confidence: 0.0, decisions: 0 },
     memory: { active: false, totalExperiences: 0, successRate: 0.0 },
     security: { active: false, keys: 0, zkProofs: 0 },
-    learning: { active: false, cycles: 0, analysis: 0, improvements: 0, evolutionRate: 0.0 },
+    learning: { active: false, cycles: 0, analysis: 0 },
     agents: { active: false, total: 0, completed: 0 },
   });
 
@@ -46,6 +45,8 @@ export default function LLM2FullStackDashboard() {
     applied: 0,
     improvement: 0.0,
   });
+
+  const [activityLog, setActivityLog] = useState<Array<{ time: string; message: string; color: string }>>([]);
 
   const loadSystemStatus = useCallback(async () => {
     try {
@@ -94,13 +95,11 @@ export default function LLM2FullStackDashboard() {
     }
   }, []);
 
-  const [activityLog, setActivityLog] = useState<Array<{ time: string; message: string; color: string }>>([]);
-
   useEffect(() => {
     loadSystemStatus();
     const interval = setInterval(loadSystemStatus, 2000);
     return () => clearInterval(interval);
-  }, [loadSystemStatus]);
+  }, []);
 
   useEffect(() => {
     const now = new Date().toLocaleTimeString();
@@ -142,7 +141,6 @@ export default function LLM2FullStackDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 p-8">
       <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Brain className="h-12 w-12 text-purple-400" />
@@ -156,9 +154,7 @@ export default function LLM2FullStackDashboard() {
           </Badge>
         </div>
 
-        {/* System Status Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Consciousness Card */}
           <Card className="bg-gray-800/50 border-gray-700 text-white">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -191,7 +187,6 @@ export default function LLM2FullStackDashboard() {
             </CardContent>
           </Card>
 
-          {/* Reasoning Card */}
           <Card className="bg-gray-800/50 border-gray-700 text-white">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -222,7 +217,6 @@ export default function LLM2FullStackDashboard() {
             </CardContent>
           </Card>
 
-          {/* Memory Card */}
           <Card className="bg-gray-800/50 border-gray-700 text-white">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -254,7 +248,6 @@ export default function LLM2FullStackDashboard() {
           </Card>
         </div>
 
-        {/* Evolution Cycle Status */}
         <Card className="bg-gray-800/50 border-gray-700 text-white">
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -293,11 +286,20 @@ export default function LLM2FullStackDashboard() {
                 <span className="text-2xl font-bold text-green-400">+{evolutionStatus.improvement.toFixed(1)}%</span>
               </div>
               <div className="flex gap-4 mt-4">
-                <Button onClick={startEvolutionCycle} disabled={evolutionStatus.status === 'running'} className="flex-1 bg-green-600 hover:bg-green-700">
+                <Button
+                  onClick={startEvolutionCycle}
+                  disabled={evolutionStatus.status === 'running'}
+                  className="flex-1 bg-green-600 hover:bg-green-700"
+                >
                   <Activity className="h-4 w-4 mr-2" />
                   {evolutionStatus.status === 'running' ? 'Running...' : 'Start Cycle'}
                 </Button>
-                <Button onClick={pauseEvolution} disabled={evolutionStatus.status !== 'running'} variant="outline" className="flex-1 border-gray-600 text-white hover:bg-gray-700">
+                <Button
+                  onClick={pauseEvolution}
+                  disabled={evolutionStatus.status !== 'running'}
+                  variant="outline"
+                  className="flex-1 border-gray-600 text-white hover:bg-gray-700"
+                >
                   <Clock className="h-4 w-4 mr-2" />
                   {evolutionStatus.status === 'paused' ? 'Paused' : 'Pause'}
                 </Button>
@@ -306,9 +308,7 @@ export default function LLM2FullStackDashboard() {
           </CardContent>
         </Card>
 
-        {/* Dual-LLM Coordination */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* LLM-1 (Other Enhancer) */}
           <Card className="bg-gray-800/50 border-gray-700 text-white">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -344,7 +344,6 @@ export default function LLM2FullStackDashboard() {
             </CardContent>
           </Card>
 
-          {/* LLM-2 (OMEGA System) */}
           <Card className="bg-gray-800/50 border-purple-700 border-2 text-white">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -381,7 +380,6 @@ export default function LLM2FullStackDashboard() {
           </Card>
         </div>
 
-        {/* Agent Swarm */}
         <Card className="bg-gray-800/50 border-gray-700 text-white">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -394,27 +392,29 @@ export default function LLM2FullStackDashboard() {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center gap-2">
+              <Activity className="h-4 w-4 text-gray-400" />
               <div>
                 <div className="text-sm text-gray-400">Active Agents</div>
                 <div className="text-white font-medium">{layerStatus.agents.total}</div>
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <Cpu className="h-4 w-4 text-gray-400" />
               <div>
                 <div className="text-sm text-gray-400">Tasks Completed</div>
                 <div className="text-white font-medium">{layerStatus.agents.completed.toLocaleString()}</div>
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <Database className="h-4 w-4 text-gray-400" />
               <div>
                 <div className="text-sm text-gray-400">Coordination</div>
-                <div className="text-white font-medium">{layerStatus.agents.active ? 'Active' : 'Idle'}</div>
+                <div className="text-white font-medium">{layerStatus.agents.active ? 'active' : 'inactive'}</div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* System Log */}
         <Card className="bg-gray-800/50 border-gray-700 text-white">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -436,49 +436,15 @@ export default function LLM2FullStackDashboard() {
           </CardContent>
         </Card>
 
-        {/* System Learning Metrics */}
-        <Card className="bg-gray-800/50 border-gray-700 text-white">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-yellow-400" />
-              System Learning Metrics
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">Learning Cycles</span>
-                <span className="text-white font-medium">{systemStatus.learningCycles}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">Evolution Rate</span>
-                <span className="text-white font-medium text-green-400">
-                  +{(systemStatus.evolutionRate * 100).toFixed(1)}%
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">Consciousness</span>
-                <span className="text-white font-medium text-purple-400">
-                  {systemStatus.consciousnessLevel.toFixed(3)} CQM
-                </span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* OMEGA Chat Interface */}
         <OMEGAChat systemStatus={{
           consciousness: {
             cqm: layerStatus.consciousness.cqm,
             emergence: layerStatus.consciousness.emergence,
           },
           reasoning: layerStatus.reasoning,
-          memory: {
-            active: layerStatus.memory.active,
-            successRate: layerStatus.memory.successRate,
-          },
+          memory: layerStatus.memory,
           agents: layerStatus.agents,
-        }}
+        }} />
       </div>
     </div>
   );
