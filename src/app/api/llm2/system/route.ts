@@ -136,6 +136,8 @@ export async function GET() {
           active: layerStatus.learning.active,
           cycles: layerStatus.learning.cycles,
           analysis: layerStatus.learning.codeAnalysis,
+          improvements: layerStatus.learning.improvements,
+          evolutionRate: layerStatus.learning.evolutionRate,
         },
         agents: {
           active: layerStatus.agents.active,
