@@ -1,9 +1,65 @@
-import { createServer } from 'http'
-import { Server } from 'socket.io'
+import { createServer, Server as HttpServer } from 'http'
+import { Server, Socket } from 'socket.io'
 
-const httpServer = createServer()
+// --- Interfaces ---
+
+interface User {
+  id: string
+  username: string
+}
+
+type MessageType = 'user' | 'system'
+
+interface Message {
+  id: string
+  username: string
+  content: string
+  timestamp: Date
+  type: MessageType
+}
+
+// --- Event Payloads (Incoming) ---
+
+interface JoinData {
+  username: string
+}
+
+interface MessageData {
+  content: string
+  // Note: Although username is sent, the server should rely on socket.id for authentication/identity
+  username: string 
+}
+
+// --- Event Payloads (Outgoing) ---
+
+interface TestResponse {
+  message: string
+  data: unknown
+  timestamp: string
+}
+
+interface UserJoinedResponse {
+  user: User
+  message: Message
+}
+
+interface UserLeftResponse {
+  user: Pick<User, 'id' | 'username'>
+  message: Message
+}
+
+interface UsersListResponse {
+  users: User[]
+}
+
+// --- Constants & State ---
+
+const PORT = 3003
+const users = new Map<string, User>()
+const httpServer: HttpServer = createServer()
+
 const io = new Server(httpServer, {
-  // DO NOT change the path, it is used by Caddy to forward the request to the correct port
+  // Path setup for potential reverse proxies (like Caddy)
   path: '/',
   cors: {
     origin: "*",
@@ -13,22 +69,10 @@ const io = new Server(httpServer, {
   pingInterval: 25000,
 })
 
-interface User {
-  id: string
-  username: string
-}
+// --- Utility Functions ---
 
-interface Message {
-  id: string
-  username: string
-  content: string
-  timestamp: Date
-  type: 'user' | 'system'
-}
-
-const users = new Map<string, User>()
-
-const generateMessageId = () => Math.random().toString(36).substr(2, 9)
+/** Generates a short, non-secure random ID. */
+const generateMessageId = (): string => Math.random().toString(36).slice(2, 11)
 
 const createSystemMessage = (content: string): Message => ({
   id: generateMessageId(),
@@ -46,93 +90,95 @@ const createUserMessage = (username: string, content: string): Message => ({
   type: 'user'
 })
 
-io.on('connection', (socket) => {
-  console.log(`User connected: ${socket.id}`)
+// --- Socket Handlers ---
 
-  // Add test event handler
-  socket.on('test', (data) => {
+io.on('connection', (socket: Socket) => {
+  const socketId = socket.id
+  console.log(`User connected: ${socketId}`)
+
+  // 1. Test Event Handler
+  socket.on('test', (data: unknown) => {
     console.log('Received test message:', data)
-    socket.emit('test-response', { 
+    const response: TestResponse = { 
       message: 'Server received test message', 
       data: data,
       timestamp: new Date().toISOString()
-    })
+    }
+    socket.emit('test-response', response)
   })
 
-  socket.on('join', (data: { username: string }) => {
+  // 2. Join Event Handler
+  socket.on('join', (data: JoinData) => {
     const { username } = data
     
-    // Create user object
-    const user: User = {
-      id: socket.id,
-      username
+    if (!username) {
+        return socket.emit('error', createSystemMessage('Username is required to join.'))
     }
+
+    // Create and store user object
+    const user: User = { id: socketId, username }
+    users.set(socketId, user)
     
-    // Add to user list
-    users.set(socket.id, user)
-    
-    // Send join message to all users
+    // Notify all users about the join
     const joinMessage = createSystemMessage(`${username} joined the chat room`)
-    io.emit('user-joined', { user, message: joinMessage })
+    io.emit('user-joined', { user, message: joinMessage } as UserJoinedResponse)
     
-    // Send current user list to new user
+    // Send current user list back to the new user
     const usersList = Array.from(users.values())
-    socket.emit('users-list', { users: usersList })
+    socket.emit('users-list', { users: usersList } as UsersListResponse)
     
     console.log(`${username} joined the chat room, current online users: ${users.size}`)
   })
 
-  socket.on('message', (data: { content: string; username: string }) => {
-    const { content, username } = data
-    const user = users.get(socket.id)
+  // 3. Message Event Handler
+  socket.on('message', (data: MessageData) => {
+    const { content } = data
+    const user = users.get(socketId)
     
-    if (user && user.username === username) {
-      const message = createUserMessage(username, content)
+    if (user && content && content.trim()) {
+      const message = createUserMessage(user.username, content)
       io.emit('message', message)
-      console.log(`${username}: ${content}`)
+      console.log(`${user.username}: ${content}`)
     }
   })
 
+  // 4. Disconnect Handler
   socket.on('disconnect', () => {
-    const user = users.get(socket.id)
+    const user = users.get(socketId)
     
     if (user) {
-      // Remove from user list
-      users.delete(socket.id)
+      users.delete(socketId)
       
       // Send leave message to all users
       const leaveMessage = createSystemMessage(`${user.username} left the chat room`)
-      io.emit('user-left', { user: { id: socket.id, username: user.username }, message: leaveMessage })
+      const response: UserLeftResponse = { user: { id: socketId, username: user.username }, message: leaveMessage }
+      io.emit('user-left', response)
       
       console.log(`${user.username} left the chat room, current online users: ${users.size}`)
     } else {
-      console.log(`User disconnected: ${socket.id}`)
+      console.log(`User disconnected: ${socketId} (unknown identity)`)
     }
   })
 
+  // 5. Error Handler
   socket.on('error', (error) => {
-    console.error(`Socket error (${socket.id}):`, error)
+    console.error(`Socket error (${socketId}):`, error)
   })
 })
 
-const PORT = 3003
+// --- Server Startup & Shutdown ---
+
 httpServer.listen(PORT, () => {
   console.log(`WebSocket server running on port ${PORT}`)
 })
 
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('Received SIGTERM signal, shutting down server...')
+const gracefulShutdown = (signal: string) => {
+  console.log(`Received ${signal} signal, shutting down server...`)
   httpServer.close(() => {
     console.log('WebSocket server closed')
     process.exit(0)
   })
-})
+}
 
-process.on('SIGINT', () => {
-  console.log('Received SIGINT signal, shutting down server...')
-  httpServer.close(() => {
-    console.log('WebSocket server closed')
-    process.exit(0)
-  })
-})
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'))
+process.on('SIGINT', () => gracefulShutdown('SIGINT'))
