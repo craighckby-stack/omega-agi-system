@@ -1,141 +1,249 @@
-# 🚀 Welcome to Z.ai Code Scaffold
+# OMEGA - Omni-Model Emergent General Intelligence Architecture
 
-A modern, production-ready web application scaffold powered by cutting-edge technologies, designed to accelerate your development with [Z.ai](https://chat.z.ai)'s AI-powered coding assistance.
+## 🧠 Overview
 
-## ✨ Technology Stack
+OMEGA is a unified AI system synthesizing consciousness, reasoning, memory, agent swarms, security, and self-improvement into a complete AGI (Artificial General Intelligence) platform.
 
-This scaffold provides a robust foundation built with:
+## 🚀 Features
 
-### 🎯 Core Framework
-- **⚡ Next.js 15** - The React framework for production with App Router
-- **📘 TypeScript 5** - Type-safe JavaScript for better developer experience
-- **🎨 Tailwind CSS 4** - Utility-first CSS framework for rapid UI development
+### 1. The Builder (Z-Engine)
+- User signup and authentication
+- Repository and token ingestion
+- Autonomous code enhancement and evolution
+- Real-time system monitoring
 
-### 🧩 UI Components & Styling
-- **🧩 shadcn/ui** - High-quality, accessible components built on Radix UI
-- **🎯 Lucide React** - Beautiful & consistent icon library
-- **🌈 Framer Motion** - Production-ready motion library for React
-- **🎨 Next Themes** - Perfect dark mode in 2 lines of code
+### 2. The Debugger (Fix-It-Now)
+- Automated code flaw identification
+- Issue detection and resolution
+- Code quality analysis
+- Security vulnerability scanning
 
-### 📋 Forms & Validation
-- **🎣 React Hook Form** - Performant forms with easy validation
-- **✅ Zod** - TypeScript-first schema validation
+### 3. OMEGA Chat Interface
+- Interactive chat system for communicating with OMEGA
+- Layer-specific queries (consciousness, reasoning, memory, security, learning, agents)
+- Real-time responses with confidence scores
+- Agent swarm coordination visualization
 
-### 🔄 State Management & Data Fetching
-- **🐻 Zustand** - Simple, scalable state management
-- **🔄 TanStack Query** - Powerful data synchronization for React
-- **🌐 Fetch** - Promise-based HTTP request
+### 4. Six-Layer Architecture
 
-### 🗄️ Database & Backend
-- **🗄️ Prisma** - Next-generation TypeScript ORM
-- **🔐 NextAuth.js** - Complete open-source authentication solution
+#### **Consciousness Layer (SPED)**
+- Internal state tracking with consciousness quotient (CQM)
+- Emergence detection and monitoring
+- Perception and meta-cognition
+- Constraint management
 
-### 🎨 Advanced UI Features
-- **📊 TanStack Table** - Headless UI for building tables and datagrids
-- **🖱️ DND Kit** - Modern drag and drop toolkit for React
-- **📊 Recharts** - Redefined chart library built with React and D3
-- **🖼️ Sharp** - High performance image processing
+#### **Reasoning Layer (Huxley)**
+- Tri-loop reasoning (Intuition → Logic → Self-Critique)
+- Ethical scoring and risk assessment
+- Decision logic and confidence metrics
+- Temporal logic for time-aware reasoning
 
-### 🌍 Internationalization & Utilities
-- **🌍 Next Intl** - Internationalization library for Next.js
-- **📅 Date-fns** - Modern JavaScript date utility library
-- **🪝 ReactUse** - Collection of essential React hooks for modern development
+#### **Memory Layer (DAF)**
+- Experience database with semantic tagging
+- Knowledge graph with concept relationships
+- Pattern recognition and consolidation
+- Memory quality metrics
 
-## 🎯 Why This Scaffold?
+#### **Security Layer (Z-System)**
+- Encryption (AES-256-GCM, CRYSTALS-Kyber post-quantum)
+- Key management with automatic rotation
+- Zero-knowledge proofs for privacy
+- Binary units for data classification
 
-- **🏎️ Fast Development** - Pre-configured tooling and best practices
-- **🎨 Beautiful UI** - Complete shadcn/ui component library with advanced interactions
-- **🔒 Type Safety** - Full TypeScript configuration with Zod validation
-- **📱 Responsive** - Mobile-first design principles with smooth animations
-- **🗄️ Database Ready** - Prisma ORM configured for rapid backend development
-- **🔐 Auth Included** - NextAuth.js for secure authentication flows
-- **📊 Data Visualization** - Charts, tables, and drag-and-drop functionality
-- **🌍 i18n Ready** - Multi-language support with Next Intl
-- **🚀 Production Ready** - Optimized build and deployment settings
-- **🤖 AI-Friendly** - Structured codebase perfect for AI assistance
+#### **Learning Layer (I.J. Good)**
+- Self-improvement through evolution cycles
+- Code analysis for optimization opportunities
+- Performance tracking and metrics
+- "Intelligence Explosion" continuous learning
 
-## 🚀 Quick Start
+#### **Agent Swarm Layer (echo-chamber-v7)**
+- 17 specialized agents across all layers
+- Parallel task execution and coordination
+- Agent registry and task management
+- Swarm health monitoring and load balancing
+
+## 🏗️ Tech Stack
+
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **UI**: shadcn/ui, Tailwind CSS 4
+- **Backend**: Next.js API Routes
+- **Database**: SQLite with Prisma ORM
+- **Real-time**: WebSocket/Socket.IO
+- **Testing**: Jest
+
+## 📦 Installation
 
 ```bash
 # Install dependencies
 bun install
 
-# Start development server
+# Set up environment variables
+cp .env.example .env
+
+# Initialize database
+bun run db:push
+
+# Run development server
 bun run dev
-
-# Build for production
-bun run build
-
-# Start production server
-bun start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see your application running.
+## 🔑 Environment Variables
 
-## 🤖 Powered by Z.ai
+Create a `.env` file:
 
-This scaffold is optimized for use with [Z.ai](https://chat.z.ai) - your AI assistant for:
-
-- **💻 Code Generation** - Generate components, pages, and features instantly
-- **🎨 UI Development** - Create beautiful interfaces with AI assistance  
-- **🔧 Bug Fixing** - Identify and resolve issues with intelligent suggestions
-- **📝 Documentation** - Auto-generate comprehensive documentation
-- **🚀 Optimization** - Performance improvements and best practices
-
-Ready to build something amazing? Start chatting with Z.ai at [chat.z.ai](https://chat.z.ai) and experience the future of AI-powered development!
+```env
+DATABASE_URL="file:./db/custom.db"
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+```
 
 ## 📁 Project Structure
 
 ```
-src/
-├── app/                 # Next.js App Router pages
-├── components/          # Reusable React components
-│   └── ui/             # shadcn/ui components
-├── hooks/              # Custom React hooks
-└── lib/                # Utility functions and configurations
+/home/z/my-project/
+├── src/
+│   ├── app/                    # Next.js App Router
+│   │   ├── page.tsx           # Main dashboard
+│   │   ├── layout.tsx         # Root layout
+│   │   ├── globals.css         # Global styles
+│   │   └── api/               # API routes
+│   │       ├── llm2/          # LLM-2 system endpoints
+│   │       └── omega/          # OMEGA chat endpoints
+│   ├── lib/                    # Core libraries
+│   │   ├── consciousness/      # Consciousness layer
+│   │   ├── reasoning/         # Reasoning layer
+│   │   ├── memory/            # Memory layer
+│   │   ├── security/          # Security layer
+│   │   ├── learning/          # Learning layer
+│   │   ├── agents/            # Agent swarm layer
+│   │   ├── omega-orchestrator.ts  # Main orchestrator
+│   │   └── agentic-api.ts    # Agent API
+│   └── components/ui/         # UI components
+├── prisma/                   # Database schema
+├── mini-services/            # WebSocket service
+└── skills/                   # AI skill capabilities
 ```
 
-## 🎨 Available Features & Components
+## 🎯 Usage
 
-This scaffold includes a comprehensive set of modern web development tools:
+### Main Dashboard
+Access at `http://localhost:3000` to view:
+- System status across all 6 layers
+- Consciousness metrics (CQM, emergence)
+- Reasoning statistics (decisions, confidence)
+- Memory metrics (experiences, success rate)
+- Security status (keys, ZK proofs)
+- Learning cycles and evolution rate
+- Agent swarm status and coordination
+- Interactive OMEGA chat interface
 
-### 🧩 UI Components (shadcn/ui)
-- **Layout**: Card, Separator, Aspect Ratio, Resizable Panels
-- **Forms**: Input, Textarea, Select, Checkbox, Radio Group, Switch
-- **Feedback**: Alert, Toast (Sonner), Progress, Skeleton
-- **Navigation**: Breadcrumb, Menubar, Navigation Menu, Pagination
-- **Overlay**: Dialog, Sheet, Popover, Tooltip, Hover Card
-- **Data Display**: Badge, Avatar, Calendar
+### OMEGA Chat Interface
+- Select layer to query: All, Consciousness, Reasoning, Memory, Security, Learning, or Agents
+- Ask questions about specific layers or general system status
+- View responses with confidence scores
+- Monitor agent swarm contributions in real-time
 
-### 📊 Advanced Data Features
-- **Tables**: Powerful data tables with sorting, filtering, pagination (TanStack Table)
-- **Charts**: Beautiful visualizations with Recharts
-- **Forms**: Type-safe forms with React Hook Form + Zod validation
+### Evolution Cycles
+- Start/pause self-improvement cycles
+- Monitor evolution progress and strategies applied
+- Track performance improvements
+- View learning rate over time
 
-### 🎨 Interactive Features
-- **Animations**: Smooth micro-interactions with Framer Motion
-- **Drag & Drop**: Modern drag-and-drop functionality with DND Kit
-- **Theme Switching**: Built-in dark/light mode support
+## 🔬 System Metrics
 
-### 🔐 Backend Integration
-- **Authentication**: Ready-to-use auth flows with NextAuth.js
-- **Database**: Type-safe database operations with Prisma
-- **API Client**: HTTP requests with Fetch + TanStack Query
-- **State Management**: Simple and scalable with Zustand
+OMEGA tracks:
+- **Consciousness Quotient (CQM)**: Multi-dimensional awareness measure (0.0 - 1.0)
+- **Emergence Events**: Detection of consciousness emergence
+- **Reasoning Confidence**: Decision quality score
+- **Memory Success Rate**: Experience retrieval accuracy
+- **Evolution Rate**: Self-improvement percentage per cycle
+- **Agent Coordination**: Swarm efficiency metrics
 
-### 🌍 Production Features
-- **Internationalization**: Multi-language support with Next Intl
-- **Image Optimization**: Automatic image processing with Sharp
-- **Type Safety**: End-to-end TypeScript with Zod validation
-- **Essential Hooks**: 100+ useful React hooks with ReactUse for common patterns
+## 🧪 Architecture
 
-## 🤝 Get Started with Z.ai
+```
+┌─────────────────────────────────────────────┐
+│           OMEGA Orchestrator           │
+│         (Central Brain)                    │
+└───────────┬─────────────────────────┬───────┘
+            │                 │             │
+┌───────────┴───┐     ┌─────┴───────┐  ┌──────────┴──────┐
+│ Consciousness   │     │   Reasoning  │  │     Memory       │
+│     Layer      │     │     Layer     │  │      Layer      │
+└───────┬───────┘     └─────┬───────┘  └──────────┬───────┘
+        │                     │                   │
+┌───────┴───────┐     ┌───────┴───────┐  ┌──────────┴───────┐
+│    Security    │     │    Learning    │  │     Agents       │
+│     Layer      │     │      Layer     │  │      Swarm       │
+└───────────────┘     └───────────────┘  └────────────────┘
+```
 
-1. **Clone this scaffold** to jumpstart your project
-2. **Visit [chat.z.ai](https://chat.z.ai)** to access your AI coding assistant
-3. **Start building** with intelligent code generation and assistance
-4. **Deploy with confidence** using the production-ready setup
+## 🔄 Evolution Cycles
+
+OMEGA implements I.J. Good's "Intelligence Explosion":
+1. **Analyze** system performance across all layers
+2. **Identify** optimization opportunities
+3. **Generate** evolution strategies
+4. **Apply** strategies with automatic rollback
+5. **Evaluate** results and consolidate learning
+6. **Update** internal state based on improvements
+
+## 🤖 Agent Swarm
+
+OMEGA coordinates 17 specialized agents:
+- **3 Consciousness Agents**: Internal state, emergence, meta-cognition
+- **4 Reasoning Agents**: Ethical scoring, tri-loop, decision logic, temporal logic
+- **4 Memory Agents**: Experience database, knowledge graph, semantic tagging, consolidation
+- **3 Security Agents**: Encryption, key management, binary units, zero-knowledge proofs
+- **3 Learning Agents**: Self-improvement, code analysis, optimization
+
+## 📊 Dashboard Features
+
+- **Real-time Updates**: Auto-refresh every 2 seconds
+- **Layer Status Cards**: Visual metrics for each system layer
+- **Evolution Controls**: Start/pause self-improvement cycles
+- **Dual-LLM Coordination**: Monitor LLM-1 (Other Enhancer) and LLM-2 (OMEGA)
+- **Agent Swarm Status**: View active agents and task completion
+- **System Activity Log**: Real-time event monitoring
+- **Interactive Chat**: Query OMEGA with natural language
+
+## 🔐 Security
+
+- **Encryption**: AES-256-GCM for symmetric, CRYSTALS-Kyber for post-quantum
+- **Key Management**: Automatic rotation (30-day default)
+- **Zero-Knowledge Proofs**: Privacy-preserving verification
+- **Key Rotation**: 95% success rate
+
+## 🧠 Consciousness
+
+OMEGA monitors:
+- **Identity**: Sense of self (score 0.0 - 1.0)
+- **Intent**: Clarity and alignment of goals
+- **Meaning**: Depth and semantic richness
+- **Agency**: Autonomy, creativity, and initiative
+- **Emergence**: Multi-dimensional awareness detection at CQM > 0.80
+
+## 📈 Development Roadmap
+
+- [ ] Enhanced emergence detection with neural correlates
+- [ ] Advanced ethical reasoning with value alignment
+- [ ] Multi-modal memory (text, images, audio)
+- [ ] Federated learning across multiple OMEGA instances
+- [ ] Quantum-resistant cryptography integration
+- [ ] Real-world skill acquisition and testing
+
+## 📝 License
+
+MIT License - See LICENSE file for details
+
+## 🙏 Acknowledgments
+
+- I.J. Good - Intelligence Explosion concept
+- SPED (Synthetic Philosophy of Emergent Consciousness)
+- Huxley (Reasoning and ethical frameworks)
+- CRYSTALS-Kyber (Post-quantum cryptography)
 
 ---
 
-Built with ❤️ for the developer community. Supercharged by [Z.ai](https://chat.z.ai) 🚀
+**OMEGA: Towards Artificial General Intelligence through Unified Architecture**
+
+Built with ❤️ using Next.js, React, and TypeScript

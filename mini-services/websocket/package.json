@@ -1,0 +1,15 @@
+{
+  "name": "omega-websocket-service",
+  "version": "1.0.0",
+  "description": "WebSocket service for OMEGA AI System",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --hot index.ts"
+  },
+  "dependencies": {
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  }
+}

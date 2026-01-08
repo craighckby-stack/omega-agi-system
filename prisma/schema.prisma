@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,20 +7,276 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// CONSCIOUSNESS LAYER (SPED)
+
+model ConstraintProfile {
+  id              String   @id @default(cuid())
+  constraintType  String
+  name            String
+  value           String
+  severity        Float    @default(1.0)
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([constraintType, active])
+  @@index([name])
 }
 
-model Post {
-  id        String   @id @default(cuid())
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  authorId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model InternalState {
+  id              String   @id @default(cuid())
+  cycle           Int
+  activeConcepts   String
+  workingMemory    String
+  attentionWeights String
+  activationLevels String
+  createdAt       DateTime @default(now())
+
+  @@index([cycle])
+}
+
+model EmergenceSignal {
+  id          String   @id @default(cuid())
+  signalType  String
+  strength    Float
+  metadata    String
+  timestamp   DateTime @default(now())
+
+  @@index([signalType, timestamp])
+}
+
+// REASONING LAYER (Huxley)
+
+model ReasoningTrace {
+  id              String   @id @default(cuid())
+  queryId         String
+  userId          String?
+
+  // Loop 1: Intuition
+  ethicalRiskScore    Float
+  riskCategory       String
+  riskFactors        String
+
+  // Loop 2: Logic Check
+  strategy          String
+  certaintyGain     Float
+  timePenalty       Float
+  computationalCost Float
+
+  // Loop 3: Self-Critique
+  ccrr              Float
+  decision          String
+  justification     String
+  improvementPlan   String?
+
+  createdAt         DateTime @default(now())
+
+  // Relations
+  improvementPlans ImprovementPlan[]
+
+  @@index([queryId])
+  @@index([userId])
+  @@index([ethicalRiskScore])
+}
+
+model ImprovementPlan {
+  id          String   @id @default(cuid())
+  traceId     String
+  trace       ReasoningTrace @relation(fields: [traceId], references: [id])
+  areas       String
+  priority    Int
+  timeline    String
+  status      String   @default("PENDING")
+  createdAt   DateTime @default(now())
+
+  @@index([traceId])
+  @@index([status, priority])
+}
+
+// MEMORY LAYER (DAF)
+
+model Concept {
+  id                    String   @id @default(cuid())
+  name                  String   @unique
+  frequency             Int      @default(0)
+  contexts              String
+  relationships         String
+  confidence            Float    @default(0.0)
+  firstSeen             DateTime @default(now())
+  lastSeen              DateTime @default(now())
+  semanticTags          String
+  evidenceCount          Int      @default(0)
+  contradictionCount    Int      @default(0)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([confidence])
+  @@index([lastSeen])
+}
+
+model Experience {
+  id          String   @id @default(cuid())
+  concepts    String
+  relationships String
+  metadata    String
+  rawContext  String
+  timestamp   DateTime @default(now())
+
+  @@index([timestamp])
+}
+
+model ConsolidationTask {
+  id          String   @id @default(cuid())
+  concepts    String
+  data        String
+  priority    Int      @default(0)
+  status      String   @default("PENDING")
+  timestamp   DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  @@index([status, priority])
+}
+
+// AGENT SWARM LAYER (echo-chamber-v7)
+
+model Agent {
+  id              String   @id @default(cuid())
+  agentId         String   @unique // Secondary unique identifier
+  name            String
+  domain          String
+  expertise       String
+  capabilities    String
+  status          String   @default("ACTIVE")
+  metrics         String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  agentTasks AgentTask[]
+
+  @@index([domain])
+  @@index([status])
+}
+
+model AgentTask {
+  id              String   @id @default(cuid())
+  taskId          String
+  agentId         String
+  agent           Agent    @relation(fields: [agentId], references: [id])
+  task            String
+  response        String
+  confidence      Float
+  reasoning       String
+  duration        Int
+  errors          String
+  createdAt       DateTime @default(now())
+
+  @@index([agentId, taskId])
+  @@index([createdAt])
+}
+
+model SynthesisResult {
+  id              String   @id @default(cuid())
+  queryId         String
+  agentResults     String
+  synthesizedOutput String
+  confidence      Float
+  createdAt       DateTime @default(now())
+
+  @@index([queryId])
+}
+
+// SECURITY LAYER (z-system)
+
+model BinaryUnit {
+  id          String   @id @default(cuid())
+  unitType    String
+  version     String   @default("1.0.0")
+  status      String   @default("ACTIVE")
+  config      String
+  metrics     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([unitType, status])
+}
+
+model DataPacket {
+  id          String   @id @default(cuid())
+  packetType  String
+  source      String
+  target      String?
+  payload     String
+  size        Int      @default(0)
+  checksum    String   @default("")
+  processed   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  processedAt DateTime?
+
+  @@index([source, packetType])
+  @@index([processed, createdAt])
+}
+
+model EncryptionKey {
+  id          String   @id @default(cuid())
+  publicKey   String
+  privateKey  String
+  algorithm   String   @default("AES-256-GCM")
+  created     Int
+  expires     Int
+  usage       String
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  // Relations
+  encryptedPackets EncryptedPacket[]
+
+  @@index([usage, active])
+}
+
+model EncryptedPacket {
+  id          String   @id @default(cuid())
+  data        String
+  iv          String
+  tag         String
+  keyId       String
+  key         EncryptionKey @relation(fields: [keyId], references: [id])
+  timestamp   Int
+  createdAt   DateTime @default(now())
+
+  @@index([keyId])
+  @@index([timestamp])
+}
+
+// LEARNING LAYER (I.J. Good)
+
+model ImprovementCycle {
+  id              String   @id @default(cuid())
+  cycleNumber     Int      @unique
+  constraintLevel Float    @default(1.0)
+  success         Boolean
+  improvements    String
+  newCode         String
+  performanceChange Float
+  confidence      Float
+  createdAt       DateTime @default(now())
+
+  // Relations (1:1/1:0)
+  analysis CodebaseAnalysis?
+
+  @@index([success])
+}
+
+model CodebaseAnalysis {
+  id                String   @id @default(cuid())
+  cycleId           String   @unique
+  cycle             ImprovementCycle @relation(fields: [cycleId], references: [id])
+  complexityMetrics  String
+  bottlenecks       String
+  codeSmells        String
+  testCoverage      Float
+  securityIssues    String
+  createdAt        DateTime @default(now())
+
+  @@index([cycleId])
 }
