@@ -4,10 +4,11 @@ import { inspect } from 'util'
 
 // --- Configuration ---
 const DEFAULT_PORT = 3003
-// Use bitwise OR 0 for explicit integer coercion (highly optimized way to handle fallback)
+// Coerce environment variable to integer efficiently, falling back to default
 const PORT = +(process.env.WEBSOCKET_PORT || DEFAULT_PORT) | 0
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-// Define strict room names for type safety and constant optimization
+
+// Define strict room names using 'as const' for immutability and type inference
 const DEFAULT_ROOMS = ['metrics', 'agents', 'reasoning', 'memory', 'security'] as const
 
 type RoomName = typeof DEFAULT_ROOMS[number]
@@ -15,13 +16,14 @@ type RoomEventMap = Record<RoomName, { JOIN: string, JOINED: string, BROADCAST: 
 
 // --- Utilities ---
 
-// Minimalistic, efficient logging wrapper. V8 handles object printing well.
+// Consistent logging utility
 const log = (message: string, ...args: any[]) => {
+  // Use V8's native console functionality for structured logging
   console.log(`[WS] ${message}`, ...args)
 }
 
-// Pre-calculate room event names for execution speed and strict typing
-const ROOM_EVENTS = DEFAULT_ROOMS.reduce((acc, room) => {
+// Pre-calculate room event names for strict typing and execution speed
+const ROOM_EVENTS: RoomEventMap = DEFAULT_ROOMS.reduce((acc, room) => {
   acc[room] = {
     JOIN: `join-${room}`,
     JOINED: `joined-${room}`,
@@ -41,53 +43,53 @@ const io = new Server(httpServer, {
     methods: ['GET', 'POST'],
     credentials: true,
   },
-  // Ensure buffer size is adequate but not excessive (10MB)
+  // Set buffer limit (10MB) and preferred transports
   maxHttpBufferSize: 1e7,
   transports: ['websocket', 'polling'],
 })
 
 /**
- * Sets up strict listeners for defined rooms.
+ * Sets up explicit listeners allowing clients to subscribe to specific rooms
+ * and enabling room-specific broadcasting.
  */
 const setupRoomListeners = (socket: Socket) => {
   for (const room of DEFAULT_ROOMS) {
     const events = ROOM_EVENTS[room]
 
-    // Explicit room join request handler
+    // Handler for explicit room join request
     socket.on(events.JOIN, () => {
-      // Check for redundancy (idempotence)
+      // Ensure idempotence: only join if not already a member
       if (!socket.rooms.has(room)) {
         socket.join(room)
-        socket.emit(events.JOINED, { room })
-        log(`Socket ${socket.id} joined room: ${room}`)
+        socket.emit(events.JOINED, { room, status: 'ok' })
+        log(`Socket ${socket.id} subscribed to room: ${room}`)
+      } else {
+        socket.emit(events.JOINED, { room, status: 'already_joined' })
       }
     })
 
-    // High-traffic broadcast handler
+    // Handler for broadcasting data to all other sockets in this room
     socket.on(events.BROADCAST, (data: unknown) => {
-      // Emit update payload directly to the room
+      // Use socket.to(room) to exclude the sender
       socket.to(room).emit(events.UPDATE, data)
     })
   }
 }
 
 /**
- * Handles client connection, initial setup, and listener configuration.
+ * Handles client connection, initialization, and listener configuration.
  */
 const handleConnection = (socket: Socket) => {
   log(`[CONNECT] Client connected: ${socket.id}`)
 
-  // Immediately join all default rooms using efficient array join
-  socket.join(DEFAULT_ROOMS as string[])
-
-  // Send initialization confirmation
+  // Send initialization confirmation immediately
   socket.emit('connected', {
     socketId: socket.id,
     timestamp: Date.now(),
-    rooms: DEFAULT_ROOMS
+    availableRooms: DEFAULT_ROOMS
   })
 
-  // Configure dynamic room logic
+  // Configure dynamic room subscription logic
   setupRoomListeners(socket)
 
   // Disconnection handler
@@ -104,7 +106,7 @@ httpServer.on('error', (err: NodeJS.ErrnoException) => {
   if (err.code === 'EADDRINUSE') {
     console.error(`[FATAL] Port ${PORT} is already in use.`)
   } else {
-    // Use inspect for critical error logging
+    // Use inspect for comprehensive critical error logging
     console.error(`[FATAL] SERVER ERROR:`, inspect(err))
   }
   process.exit(1)
