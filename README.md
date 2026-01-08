@@ -1,6 +1,8 @@
-# ⚠️  READ THIS FIRST  ⚠️
+FILE: README.md
+CODE:
+# ⚠️ READ THIS FIRST ⚠️
 
-## 🛑 THIS IS NOT A PREBUILT AI SYSTEM
+## 🏗️ THIS IS NOT A PREBUILT AI SYSTEM
 
 **OMEGA is a scaffolding system.**
 
@@ -46,7 +48,7 @@ OMEGA provides a complete architecture framework for building AI systems. It inc
 - Separation of concerns: consciousness, reasoning, memory, security, learning, agents
 - Communication patterns between layers
 
-## 🏗️ The 6-Layer Architecture
+## 🪜 The 6-Layer Architecture
 
 OMEGA organizes AI system code into 6 layers:
 
@@ -113,10 +115,10 @@ OMEGA organizes AI system code into 6 layers:
 /src/
 ├── app/
 │   ├── page.tsx                          # Main dashboard UI
-│   ├── api/
-│   │   ├── llm2/system/                # System status API
-│   │   ├── llm2/evolution/             # Self-improvement API
-│   │   └── omega/chat/                 # Chat interaction API
+│   └── api/
+│       ├── llm2/system/                # System status API
+│       ├── llm2/evolution/             # Self-improvement API
+│       └── omega/chat/                 # Chat interaction API
 ├── lib/
 │   ├── consciousness/                     # Consciousness layer code
 │   │   ├── emergence.ts                # Detect emergence events
@@ -211,7 +213,7 @@ When you run the dashboard, you'll see:
 - **Activity Log**: Real-time event stream
 - **Chat Interface**: For communicating with your AI system
 
-## 🔧 What You Need to Build Yourself
+## 🔨 What You Need to Build Yourself
 
 To make OMEGA into a working AI system, you need to:
 
@@ -284,7 +286,7 @@ Edit system behavior in:
 - `/src/lib/learning/` - Configure improvement cycles
 - `/src/lib/agents/` - Configure agent behavior
 
-## 🔐 Security Considerations
+## 🔒 Security Considerations
 
 Since you'll be adding real AI models:
 - **Never commit API keys** to this repository
@@ -326,7 +328,7 @@ This is a SCAFFOLDING SYSTEM in active development.
 - ⚠️ Your specific business rules
 - ⚠️ Prompt engineering for your use case
 
-## 🤝 Contributing
+## 🤗 Contributing
 
 Since this is a scaffold, contributions should:
 - Keep the generic framework structure
@@ -334,7 +336,7 @@ Since this is a scaffold, contributions should:
 - Improve the scaffolding, not the content
 - Add better documentation
 
-## 📝 License
+## 📜 License
 
 MIT License - See LICENSE file for details
 
@@ -364,7 +366,7 @@ To build an AI system with OMEGA, you'll need to understand:
 
 ---
 
-## ⚡ Quick Start Summary
+## ✨ Quick Start Summary
 
 1. **Clone**: `git clone https://github.com/craighckby-stack/omega-agi-system.git`
 2. **Install**: `cd omega-agi-system && bun install`
