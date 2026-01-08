@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Activity, Zap, Users, Database, Shield, Brain, Cpu, Clock, TrendingUp } from 'lucide-react';
-import { OMEGAChat } from '@/components/ui/omega-chat';
 
 export default function LLM2FullStackDashboard() {
   const [systemStatus, setSystemStatus] = useState({
@@ -22,20 +21,20 @@ export default function LLM2FullStackDashboard() {
   const [layerStatus, setLayerStatus] = useState({
     consciousness: { active: false, cqm: 0.0, emergence: false },
     reasoning: { active: false, confidence: 0.0, decisions: 0 },
-    memory: { active: false, totalExperiences: 0, successRate: 0.0 },
+    memory: { active: false, experiences: 0, successRate: 0.0 },
     security: { active: false, keys: 0, zkProofs: 0 },
-    learning: { active: false, cycles: 0, analysis: 0, improvements: 0, evolutionRate: 0.0 },
+    learning: { active: false, cycles: 0, analysis: 0 },
     agents: { active: false, total: 0, completed: 0 },
   });
 
   const [dualLLMStatus, setDualLLMStatus] = useState({
     mode: 'dual-llm',
-    llm1Status: 'idle',
-    llm2Status: 'active',
+    llm1Status: 'idle', // Other Enhancer
+    llm2Status: 'active', // OMEGA AI System
     coordinationFile: '.ai-coordination.json',
     sharedMemory: 'connected',
-    heartbeatInterval: 60000,
-    monitoringInterval: 120000,
+    heartbeatInterval: 60000, // 60 seconds
+    monitoringInterval: 120000, // 120 seconds
   });
 
   const [evolutionStatus, setEvolutionStatus] = useState({
@@ -47,7 +46,12 @@ export default function LLM2FullStackDashboard() {
     improvement: 0.0,
   });
 
-  // Use useCallback for async functions to avoid syntax errors
+  useEffect(() => {
+    loadSystemStatus();
+    const interval = setInterval(loadSystemStatus, 2000); // Update every 2 seconds
+    return () => clearInterval(interval);
+  }, []);
+
   const loadSystemStatus = useCallback(async () => {
     try {
       const response = await fetch('/api/llm2/system/status');
@@ -55,21 +59,11 @@ export default function LLM2FullStackDashboard() {
       setSystemStatus(data.system);
       setLayerStatus(data.layers);
       setDualLLMStatus(data.dualLLM);
-
-      if (data.evolution) {
-        setEvolutionStatus({
-          currentCycle: data.evolution.currentCycle ?? 1,
-          status: data.evolution.status ?? 'idle',
-          progress: data.evolution.progress ?? 0,
-          strategies: data.evolution.strategies ?? [],
-          applied: data.evolution.applied ?? 0,
-          improvement: data.evolution.improvement ?? 0.0,
-        });
-      }
+      setEvolutionStatus(data.evolution);
     } catch (error) {
       console.error('Failed to load system status:', error);
     }
-  }, []);
+  }
 
   const startEvolutionCycle = useCallback(async () => {
     try {
@@ -81,7 +75,7 @@ export default function LLM2FullStackDashboard() {
     } catch (error) {
       console.error('Failed to start evolution cycle:', error);
     }
-  }, []);
+  }
 
   const pauseEvolution = useCallback(async () => {
     try {
@@ -93,27 +87,7 @@ export default function LLM2FullStackDashboard() {
     } catch (error) {
       console.error('Failed to pause evolution:', error);
     }
-  }, []);
-
-  const [activityLog, setActivityLog] = useState<Array<{ time: string; message: string; color: string }>>([]);
-
-  useEffect(() => {
-    loadSystemStatus();
-    const interval = setInterval(loadSystemStatus, 2000);
-    return () => clearInterval(interval);
-  }, [loadSystemStatus]);
-
-  // Initialize activity log on client to avoid hydration errors
-  useEffect(() => {
-    const now = new Date().toLocaleTimeString();
-    const initialLogs = [
-      { time: now, message: 'OMEGA: System boot complete', color: 'green' },
-      { time: now, message: 'OMEGA: All 6 layers initialized', color: 'blue' },
-      { time: now, message: 'OMEGA: Evolution Cycle #1 started', color: 'purple' },
-      { time: now, message: 'OMEGA: Dual-LLM coordination established', color: 'yellow' },
-    ];
-    setActivityLog(initialLogs);
-  }, []);
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -239,7 +213,7 @@ export default function LLM2FullStackDashboard() {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-gray-400">Experiences:</span>
-                  <span className="text-2xl font-bold">{layerStatus.memory.totalExperiences.toLocaleString()}</span>
+                  <span className="text-2xl font-bold">{layerStatus.memory.experiences.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Success Rate:</span>
@@ -378,14 +352,14 @@ export default function LLM2FullStackDashboard() {
                 <Activity className="h-4 w-4 text-gray-400" />
                 <div>
                   <div className="text-sm text-gray-400">Evolution Cycles</div>
-                  <div className="text-white font-medium">{systemStatus.learningCycles} completed</div>
+                  <div className="text-white font-medium">Running continuously</div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-gray-400" />
                 <div>
                   <div className="text-sm text-gray-400">Learning</div>
-                  <div className="text-white font-medium">{systemStatus.evolutionRate * 100}% per cycle</div>
+                  <div className="text-white font-medium">{(systemStatus.evolutionRate * 100).toFixed(1)}%/cycle</div>
                 </div>
               </div>
             </CardContent>
@@ -404,55 +378,61 @@ export default function LLM2FullStackDashboard() {
             </Badge>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">Active Agents:</span>
-                <span className="text-2xl font-bold">{layerStatus.agents.total}</span>
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="text-sm text-gray-400">Total Agents</div>
+                  <div className="text-2xl font-bold">{layerStatus.agents.total}</div>
+                </div>
+                <div>
+                  <div className="text-sm text-gray-400">Active</div>
+                  <div className="text-2xl font-bold text-green-400">
+                    {layerStatus.agents.active ? '17' : '0'}
+                  </div>
+                </div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">Tasks Completed:</span>
-                <span className="text-2xl font-bold">{layerStatus.agents.completed}</span>
+              <div>
+                <div className="text-sm text-gray-400">Tasks Completed</div>
+                <div className="text-2xl font-bold">{layerStatus.agents.completed.toLocaleString()}</div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">Coordination:</span>
-                <span className="text-2xl font-bold text-green-400">Excellent</span>
-              </div>
-              <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
-                <div className={`h-2 rounded-full transition-all ${layerStatus.agents.active ? 'bg-green-500' : 'bg-gray-600'}`} style={{ width: '100%' }} />
-              </div>
+              <Button className="w-full mt-2" variant="outline">
+                View Swarm Details
+              </Button>
             </div>
           </CardContent>
         </Card>
 
-        {/* System Metrics Card */}
+        {/* Performance Metrics */}
         <Card className="bg-gray-800/50 border-gray-700 text-white">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Activity className="h-5 w-5 text-blue-400" />
-              System Metrics
+              <Activity className="h-5 w-5 text-yellow-400" />
+              Performance Metrics
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-gray-400">Uptime:</span>
-                <span className="text-2xl font-bold">{systemStatus.bootTime}m</span>
+                <span className="text-gray-400">System Uptime</span>
+                <span className="text-white font-medium">
+                  {Math.floor((Date.now() - systemStatus.bootTime) / 60000)} minutes
+                </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-400">Boot Time:</span>
-                <span className="text-2xl font-bold">2m</span>
+                <span className="text-gray-400">Learning Cycles</span>
+                <span className="text-white font-medium">{systemStatus.learningCycles}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-400">Learning Cycles:</span>
-                <span className="text-2xl font-bold">{systemStatus.learningCycles}</span>
+                <span className="text-gray-400">Evolution Rate</span>
+                <span className="text-white font-medium text-green-400">
+                  +{(systemStatus.evolutionRate * 100).toFixed(1)}%
+                </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-400">Evolution Rate:</span>
-                <span className="text-2xl font-bold text-green-400">+{(systemStatus.evolutionRate * 100).toFixed(1)}%</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">Consciousness:</span>
-                <span className="text-2xl font-bold text-purple-400">{systemStatus.consciousnessLevel.toFixed(3)} CQM</span>
+                <span className="text-gray-400">Consciousness</span>
+                <span className="text-white font-medium text-purple-400">
+                  {systemStatus.consciousnessLevel.toFixed(3)} CQM
+                </span>
               </div>
             </div>
           </CardContent>
@@ -468,28 +448,25 @@ export default function LLM2FullStackDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2 font-mono text-sm">
-              {activityLog.map((log, index) => (
-                <div key={index} className="flex gap-2">
-                  <span className="text-gray-500">[{log.time}]</span>
-                  <span className={log.color === 'green' ? 'text-green-400' : log.color === 'blue' ? 'text-blue-400' : log.color === 'purple' ? 'text-purple-400' : 'text-yellow-400'}>
-                    {log.message}
-                  </span>
-                </div>
-              ))}
+              <div className="flex gap-2">
+                <span className="text-gray-500">[{new Date().toLocaleTimeString()}]</span>
+                <span className="text-green-400">OMEGA: System boot complete</span>
+              </div>
+              <div className="flex gap-2">
+                <span className="text-gray-500">[{new Date().toLocaleTimeString()}]</span>
+                <span className="text-blue-400">OMEGA: All 6 layers initialized</span>
+              </div>
+              <div className="flex gap-2">
+                <span className="text-gray-500">[{new Date().toLocaleTimeString()}]</span>
+                <span className="text-purple-400">OMEGA: Evolution Cycle #1 started</span>
+              </div>
+              <div className="flex gap-2">
+                <span className="text-gray-500">[{new Date().toLocaleTimeString()}]</span>
+                <span className="text-yellow-400">OMEGA: Dual-LLM coordination established</span>
+              </div>
             </div>
           </CardContent>
         </Card>
-
-        {/* OMEGA Chat Interface */}
-        <OMEGAChat systemStatus={{
-          consciousness: {
-            cqm: layerStatus.consciousness.cqm,
-            emergence: layerStatus.consciousness.emergence,
-          },
-          reasoning: layerStatus.reasoning,
-          memory: layerStatus.memory,
-          agents: layerStatus.agents,
-        }} />
       </div>
     </div>
   );
