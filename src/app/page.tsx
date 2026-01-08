@@ -60,7 +60,18 @@ export default function LLM2FullStackDashboard() {
       setSystemStatus(data.system);
       setLayerStatus(data.layers);
       setDualLLMStatus(data.dualLLM);
-      setEvolutionStatus(data.evolution);
+
+      // Only set evolution status if it exists
+      if (data.evolution) {
+        setEvolutionStatus({
+          currentCycle: data.evolution.currentCycle ?? 1,
+          status: data.evolution.status ?? 'idle',
+          progress: data.evolution.progress ?? 0,
+          strategies: data.evolution.strategies ?? [],
+          applied: data.evolution.applied ?? 0,
+          improvement: data.evolution.improvement ?? 0.0,
+        });
+      }
     } catch (error) {
       console.error('Failed to load system status:', error);
     }
