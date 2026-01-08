@@ -8,8 +8,5 @@
   },
   "dependencies": {
     "socket.io": "^4.8.1"
-  },
-  "devDependencies": {
-    "@types/node": "^20.0.0"
   }
 }
