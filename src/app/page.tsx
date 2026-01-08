@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Activity, Zap, Users, Database, Shield, Brain, Cpu, Clock, TrendingUp } from 'lucide-react';
-import { OMEGAChat } from '@/components/ui/omega-chat';
 
 export default function LLM2FullStackDashboard() {
   const [systemStatus, setSystemStatus] = useState({
@@ -22,7 +21,7 @@ export default function LLM2FullStackDashboard() {
   const [layerStatus, setLayerStatus] = useState({
     consciousness: { active: false, cqm: 0.0, emergence: false },
     reasoning: { active: false, confidence: 0.0, decisions: 0 },
-    memory: { active: false, totalExperiences: 0, successRate: 0.0 },
+    memory: { active: false, experiences: 0, successRate: 0.0 },
     security: { active: false, keys: 0, zkProofs: 0 },
     learning: { active: false, cycles: 0, analysis: 0 },
     agents: { active: false, total: 0, completed: 0 },
@@ -38,28 +37,20 @@ export default function LLM2FullStackDashboard() {
     monitoringInterval: 120000, // 120 seconds
   });
 
-  const [activityLog, setActivityLog] = useState<Array<{ time: string; message: string; color: string }>>([]);
+  const [evolutionStatus, setEvolutionStatus] = useState({
+    currentCycle: 1,
+    status: 'idle',
+    progress: 0,
+    strategies: [],
+    applied: 0,
+    improvement: 0.0,
+  });
 
   useEffect(() => {
-    // Initialize system status
     loadSystemStatus();
     const interval = setInterval(loadSystemStatus, 2000); // Update every 2 seconds
     return () => clearInterval(interval);
   }, []);
-
-  // Initialize activity log on client to avoid hydration errors
-  useEffect(() => {
-    const now = new Date().toLocaleTimeString();
-    const initialLogs = [
-      { time: now, message: 'OMEGA: System boot complete', color: 'green' },
-      { time: now, message: 'OMEGA: All 6 layers initialized', color: 'blue' },
-      { time: now, message: 'OMEGA: Evolution Cycle #1 started', color: 'purple' },
-      { time: now, message: 'OMEGA: Dual-LLM coordination established', color: 'yellow' },
-    ];
-    setActivityLog(initialLogs);
-  }, []);
-
-  const [evolutionStatus, setEvolutionStatus] = useState({
 
   async function loadSystemStatus() {
     try {
@@ -68,18 +59,7 @@ export default function LLM2FullStackDashboard() {
       setSystemStatus(data.system);
       setLayerStatus(data.layers);
       setDualLLMStatus(data.dualLLM);
-
-      // Only set evolution status if it exists
-      if (data.evolution) {
-        setEvolutionStatus({
-          currentCycle: data.evolution.currentCycle ?? 1,
-          status: data.evolution.status ?? 'idle',
-          progress: data.evolution.progress ?? 0,
-          strategies: data.evolution.strategies ?? [],
-          applied: data.evolution.applied ?? 0,
-          improvement: data.evolution.improvement ?? 0.0,
-        });
-      }
+      setEvolutionStatus(data.evolution);
     } catch (error) {
       console.error('Failed to load system status:', error);
     }
@@ -233,7 +213,7 @@ export default function LLM2FullStackDashboard() {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-gray-400">Experiences:</span>
-                  <span className="text-2xl font-bold">{layerStatus.memory.totalExperiences.toLocaleString()}</span>
+                  <span className="text-2xl font-bold">{layerStatus.memory.experiences.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Success Rate:</span>
@@ -468,27 +448,25 @@ export default function LLM2FullStackDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2 font-mono text-sm">
-              {activityLog.map((log, index) => (
-                <div key={index} className="flex gap-2">
-                  <span className="text-gray-500">[{log.time}]</span>
-                  <span className={log.color === 'green' ? 'text-green-400' : log.color === 'blue' ? 'text-blue-400' : log.color === 'purple' ? 'text-purple-400' : 'text-yellow-400'}>
-                    {log.message}
-                  </span>
-                </div>
-              ))}
+              <div className="flex gap-2">
+                <span className="text-gray-500">[{new Date().toLocaleTimeString()}]</span>
+                <span className="text-green-400">OMEGA: System boot complete</span>
+              </div>
+              <div className="flex gap-2">
+                <span className="text-gray-500">[{new Date().toLocaleTimeString()}]</span>
+                <span className="text-blue-400">OMEGA: All 6 layers initialized</span>
+              </div>
+              <div className="flex gap-2">
+                <span className="text-gray-500">[{new Date().toLocaleTimeString()}]</span>
+                <span className="text-purple-400">OMEGA: Evolution Cycle #1 started</span>
+              </div>
+              <div className="flex gap-2">
+                <span className="text-gray-500">[{new Date().toLocaleTimeString()}]</span>
+                <span className="text-yellow-400">OMEGA: Dual-LLM coordination established</span>
+              </div>
             </div>
           </CardContent>
         </Card>
-        {/* OMEGA Chat Interface */}
-        <OMEGAChat systemStatus={{
-          consciousness: {
-            cqm: layerStatus.consciousness.cqm,
-            emergence: layerStatus.consciousness.emergence,
-          },
-          reasoning: layerStatus.reasoning,
-          memory: layerStatus.memory,
-          agents: layerStatus.agents,
-        }} />
       </div>
     </div>
   );
